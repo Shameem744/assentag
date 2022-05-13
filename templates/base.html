@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+    <title>{% block title %}Document {% endblock %}</title>
+     <!-- Latest compiled and minified CSS -->
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+
+
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script> 
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+    {% block head %}
+    {% endblock %}
+</head>
+<body>
+    <script>
+        $(document).ready(function(){
+            $("#search").on("click", function() {
+                $(".search").toggle();
+            });
+
+            $("#search").on("keyup", function(){
+                if($(this).val().length>1){
+                $.get('/accounts/search/ajax/',{"query": $(this).val()}, function(result){
+                    // <a href="#" class="dropdown-item" name="action1">Action 1</a>
+                    let list =""
+                    result.forEach((value,index,arr)=>{
+                        list+=`<a href="/accounts/profile/user/${value.user__id}/" class="dropdown-item" style="padding-left: 10px;">
+                            <img src="/media/${value.profile}" style="height:40px;width:40px;object-fit:cover;border-radius:50%;margin-right: 10px;">${value.user__email}</a>`
+                    })
+                    $(".search").html(list)
+                    $(".search").show();
+                })
+                }
+                else{
+                    $(".search").hide();
+                }
+            })
+        })
+    </script>
+    <style>
+        .nav-icon {
+            font-size: 1.5em;
+            margin-left: 20px;
+        }
+        .search {
+            margin-left: 15px;
+            width: 250px;
+        }
+        body{
+            background-color: #f7f7f775;
+        }
+    </style>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs container fle" style="display: flex;
+flex-direction: row;justify-content: space-between;" id="navId">
+        <li class="nav-item">
+            <a href="/" class="nav-link" style="font-weight: bold;">AssentTag</a>
+        </li>
+        <li class="nav-item col-3">
+            <!-- <a href="#tab5Id" class="nav-link">Search</a> -->
+            <input type="text" placeholder="Search" class="form-control form-control-sm bg-white" id="search">
+                <div class="dropdown-menu search" role="menu" aria-labelledby="actionToggle">
+                  
+                </div>
+              </div>
+        </li>
+        <div class="nav-item d-flex justify-content-center align-self-center" style="height:39px;">
+            <a class="nav-icon justify-content-center align-self-center" href="/"><i class="fas fa-home"></i></a>
+            <a class="nav-icon justify-content-center align-self-center" href="/accounts/profile/"><i class=" fas fa-user"></i></a>
+            <a class="nav-icon justify-content-center align-self-center" href="/accounts/notifications/"><i class=" fas fa-bell"></i></a>
+            <a class="nav-icon justify-content-center align-self-center" href="/accounts/chat/"><i class="fas fa-comment-alt"></i></a>
+        </div>
+    </ul>
+    
+    <div class="container">
+    {% block content %}
+
+    {% endblock %}
+    </div>
+</body>
+</html>

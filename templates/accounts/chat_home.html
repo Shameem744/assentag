@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<script>
+  $(document).ready(function(){
+
+});
+</script>
+
+<style>
+  .notifi::-webkit-scrollbar{
+    width: 3px;
+  }
+  .notifi::-webkit-scrollbar-track {
+	background-color: #fafafa;
+	/* You can add other properties & values */
+}
+.notifi::-webkit-scrollbar-thumb {
+  background: rgb(158, 158, 158); 
+}
+</style>
+<div class="col-7 m-auto">
+
+  <div class="list-group notifi mt-5">
+      <div class="list-group-item list-group-item-action flex-column align-items-start "></a>
+        <div class="d-flex w-100 justify-content-between">
+
+          <p class="mb-1 lead">Chat</p>
+
+        </div>
+      </div>
+
+  <div class="list-group notifi mt-2" style="height: 580px;overflow-y: scroll;">
+    {% for noti in chats %}
+      <a href="/accounts/chat/{{ noti.id }}/" class="list-group-item list-group-item-action flex-column align-items-start ">
+        <div class="d-flex w-100 justify-content-between">
+
+          <p class="mb-1"> <span  class="" style="font-weight: bold;font-size: 1.05em;">{{ noti.email }}</span></p>
+          <img src="{{ noti.profilephoto_set.all.0.profile.url }}" alt="" style="width: 40px; height: 40px; border-radius: 50%;object-fit: cover;">
+          
+        </div>
+      </a>
+    {% endfor %}
+    </div>
+
+</div>
+
+{% endblock%}
+
+<!---->

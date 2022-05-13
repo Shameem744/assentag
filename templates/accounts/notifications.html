@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<script>
+  $(document).ready(function(){
+
+});
+</script>
+
+<style>
+  .notifi::-webkit-scrollbar{
+    width: 3px;
+  }
+  .notifi::-webkit-scrollbar-track {
+	background-color: #fafafa;
+	/* You can add other properties & values */
+}
+.notifi::-webkit-scrollbar-thumb {
+  background: rgb(158, 158, 158); 
+}
+</style>
+<div class="col-7 m-auto">
+
+  <div class="list-group notifi mt-5">
+      <div class="list-group-item list-group-item-action flex-column align-items-start "></a>
+        <div class="d-flex w-100 justify-content-between">
+
+          <p class="mb-1 lead">Notifications</p>
+
+        </div>
+      </div>
+
+  <div class="list-group notifi mt-2" style="height: 580px;overflow-y: scroll;">
+    {% for noti in notifications %}
+    {% if noti.class_name == 'Friends' %}
+      <div class="list-group-item list-group-item-action flex-column align-items-start "></a>
+        <div class="d-flex w-100 justify-content-between">
+
+          <p class="mb-1"> <a href="/accounts/profile/user/{{ noti.follower.id }}/" class="" style="font-weight: bold;font-size: 1.05em;"> {{ noti.follower.email }}</a> started following you. <span style="font-size: smaller; letter-spacing: 0; margin-left: 5px;"> {{ noti.created_at | naturaltime }}</span></p>
+          <img src="{{ noti.follower.profilephoto_set.all.0.profile.url }}" alt="" style="width: 40px; height: 40px; border-radius: 50%;object-fit: cover;">
+          
+        </div>
+      </div>
+      {% elif noti.class_name == 'Comments' %}
+      <div class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+
+          <p class="mb-1"><a href="/accounts/profile/user/{{ noti.user.id }}/" class="" style="font-weight: bold;font-size: 1.05em;"> {{ noti.user.email }}</a> commented on your <a href="/accounts/comment/{{ noti.post.id }}/" class="" style="font-weight: bold;font-size: 1.05em;"> photo</a> <span style="font-size: smaller; letter-spacing: 0; margin-left: 5px;"> {{ noti.created_at | naturaltime }}</span></p>
+          <img src="{{ noti.user.profilephoto_set.all.0.profile.url }}" alt="" style="width: 40px; height: 40px; border-radius: 50%;object-fit: cover;">
+       
+        </div>
+      </div>
+      {% elif noti.class_name == 'Like' %}
+      <div class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+
+          <p class="mb-1"><a href="/accounts/profile/user/{{ noti.user.id }}/" class="" style="font-weight: bold;font-size: 1.05em;"> {{ noti.user.email }}</a> liked your <a href="/accounts/comment/{{ noti.post.id }}/" class="" style="font-weight: bold;font-size: 1.05em;"> photo</a> <span style="font-size: smaller; letter-spacing: 0; margin-left: 5px;"> {{ noti.created_at | naturaltime }}</span></p>
+          <p class="mb-1"></p>
+          <img src="{{ noti.user.profilephoto_set.all.0.profile.url }}" alt="" style="width: 40px; height: 40px; border-radius: 50%;object-fit: cover;">
+         
+        </div>
+      </div>
+      {% elif noti.class_name == 'FacesPermission' %}
+      <div class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+
+          <p class="mb-1">
+            {% if not noti.blurred and not noti.allowed %}
+            <i class="fas fa-circle" style="color: red;
+            box-shadow: 0px 0px 6px 0px red;
+            border-radius: 60%;"></i>
+            {% endif %}
+            <a href="/accounts/profile/user/{{ noti.post.user.id }}/" class="" style="font-weight: bold;font-size: 1.05em;"> 
+            {{ noti.post.user.email }}</a> posted an image that contains your face                  
+            <span style="font-size: smaller; letter-spacing: 0; margin-left: 5px;"> {{ noti.created_at | naturaltime }}</span><br> 
+            <a href="/accounts/comment/{{ noti.post.id }}/" class="badge badge-light  mt-2" style="font-weight: bold;font-size: 1.05em;">View Photo</a> 
+            {% if not noti.blurred and not noti.allowed %}
+            <a href="/accounts/allow/{{ noti.id }}/" class="badge badge-light text-secondary mt-2" style="font-weight: bold;font-size: 1.05em;">Allow</a> 
+            <a href="/accounts/blur/{{ noti.id }}/" class="badge badge-light text-danger mt-2" style="font-weight: bold;font-size: 1.05em;">Blur</a> 
+            {% endif %}
+            {% if noti.blurred %}
+            Blurred <i class="fas fa-check-circle" style="color: red"></i>
+            {% elif noti.allowed %}
+            Allowed <i class="fas fa-check-circle" style="color: green"></i>
+            {% endif %} 
+          </p>
+
+          <p class="mb-1"></p>
+          <img src="{{ noti.post.user.profilephoto_set.all.0.profile.url }}" alt="" style="width: 40px; height: 40px; border-radius: 50%;object-fit: cover;">
+         
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+    </div>
+
+</div>
+
+{% endblock%}
+
+<!---->

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<script>
+    $(document).ready(function(){
+     
+
+    })
+</script>
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-3 text-center">
+                <img id="profile_img" src="{{ profile.profilephoto_set.all.0.profile.url }}" style="width: 140px; height: 140px; border-radius: 50%;object-fit: cover;;">
+            </div>
+                <div class="col-9">
+ 
+                        <div class="card-body"> 
+                                <p class="lead d-inline" style="font-size: 2em;">{{ profile }}</p>
+                                <input type="button" class="ml-2 btn btn-sm btn-primary" onclick="location.href='/accounts/follow/user/{{ profile.id }}/'"  value="{% if following_user %} Unfollow {% else %} Follow {% endif %}">
+                                <a href="/accounts/chat/{{ profile.id }}/" class="ml-2 btn btn-sm btn-primary">Message</a>
+                                <div class="mt-3">
+                                <p class="lead d-inline" >{{ profile.posts_set.all.count }} posts</p>
+                                <p class="lead d-inline ml-4" ><a href="/accounts/follower/list/{{ profile.id }}/">{{ follower_count }} followers</a> </p>
+                                <p class="lead d-inline ml-4" ><a href="/accounts/following/list/{{ profile.id }}/">{{ following_count }} following</a></p>
+                            </div>
+                        </div>
+
+            </div>
+        </div>
+
+          <hr>
+
+          <div class="d-flex align-content-start flex-wrap">
+              {% for i in profile.posts_set.all %}
+              <a href="/accounts/comment/{{ i.id }}/"><img src="{{ i.posted_image.url }}" alt="" style="width: 300px;height:300px;object-fit: cover;border:1px solid white"></a>
+              {% endfor %}
+          </div>
+
+
+</div>
+
+
+
+
+
+{% endblock %}

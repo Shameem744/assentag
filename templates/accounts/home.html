@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+
+<script>
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+          console.log(e.target.result)
+            $('#target').attr('src', e.target.result);
+        }
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+$(document).ready(function(){
+
+$("#upload").change(function(){
+    readURL(this); 
+});
+
+$('i.fa-heart').click(function(){
+    var self = this
+    var id = $(this).data('id')
+    $.get("/accounts/like/",{"id":id},function(response){
+                if(response.like == true){
+                  $(self).css({'color':'red'})
+                  $(self).removeClass("far")
+                  $(self).addClass("fas")
+
+                }
+                else{
+                  $(self).css({'color':'black'})
+                  $(self).removeClass("fas")
+                  $(self).addClass("far")
+                }
+                $(self).next().text(response.count)
+            });
+})
+
+});
+</script>
+
+<style>
+  .round-div {
+    border-radius: 5px;
+  }
+  .notifi::-webkit-scrollbar{
+    width: 3px;
+  }
+  .notifi::-webkit-scrollbar-track {
+	background-color: #fafafa;
+	/* You can add other properties & values */
+}
+.notifi::-webkit-scrollbar-thumb {
+  background: rgb(158, 158, 158); 
+}
+</style>
+{% if not request.user.profilephoto_set.all.0.face_uploaded %}
+<div class="alert alert-dismissible alert-warning mt-4">
+  <!-- <button type="button" class="close" data-dismiss="alert">&times;</button> -->
+  <h4 class="alert-heading">Warning!</h4>
+  <p class="mb-0">For better experience <a href="/accounts/profile/" class="alert-link">upload photo</a>.</p>
+</div>
+{% endif %}
+
+<div class="row mt-5">
+  <div class="col-8">
+    <div class="card  mb-3 round-div"> 
+      <div class="card-body text-success"> 
+        <!-- <img class="card-img-top" src="{% static 'img/grp_pic.jpg' %}" alt="Card image">-->
+        <h5 class="card-title">what's new</h5>
+      </div>
+        <div class="card-footer bg-transparent ">
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <img id="target" src="" class="col-6 pl-0">
+          <div class="file-field">
+
+          <label for="upload" class="btn btn-secondary">
+          <i class="fas fa-paperclip" aria-hidden="true"></i> Attach </label>
+          <input type="file" id="upload" hidden name="post_image" required>
+        </div>
+        <div>
+          <textarea name="description" id="" cols="60" rows="3"></textarea>
+        </div>
+      <div>
+    {% if not request.user.profilephoto_set.all.0.face_uploaded %}
+    Not Available
+    {% endif %}
+    <input type="submit" value="Post" class="btn btn-success" {% if not request.user.profilephoto_set.all.0.face_uploaded %}disabled{% endif %}>
+    </div>
+  </form>
+  </div> 
+</div>
+{% for post in posts reversed %}
+      <div class="card  mb-3 round-div" style="box-shadow: 0px 5px 20px 1px #4bbf734d;">
+        <!--<a href="#" class="btn btn-default"><i class="far fa-heart"></i> Default text here</a>-->
+        <div style="display: flex;
+        flex-direction: row;justify-content: space-between;" class="pl-3 pt-2 pb-2 pr-3">
+        <div class="d-flex w-100 justify-content-start" style="height: 35px;">
+         <a href="/accounts/profile/user/{{ post.user.id }}/" > <img src="{{ post.user.profilephoto_set.all.0.profile.url }}" style="max-width: 40px;max-height: 40px;border-radius: 50%;object-fit: cover;min-width: 40px;min-height: 40px;" alt="" srcset="">
+
+          <span class="ml-2" style="line-height: 35px; vertical-align: middle;color: black">{{ post.user }}</span>
+        </a>
+        </div>
+        {% if request.user == post.user %}
+        <div class="dropdown show">
+          <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink{{ post.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          
+          </a>
+        
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink{{ post.id }}">
+            <a class="dropdown-item" href="/accounts/delete-post/{{ post.id }}/">Delete</a>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      <div style="border-top:1px solid green;border-bottom:1px solid green;">
+        <img src="{{ post.posted_image.url }}" alt="" class="w-100">
+      </div>
+      <div class="">
+        <!--<a href="#" class="btn btn-default"><i class="far fa-heart"></i> Default text here</a>-->
+        <div class="pl-4 pr-3 pt-2" style="font-weight: 700;color:rgb(138, 138, 138)">{{ post.description }}</div>
+        <div style="display: flex;
+        flex-direction: row;justify-content: space-between;" class="pl-3 pr-3 pt-1">
+        <div>
+        <p class="d-inline-block ml-2 mr-2"><i style="color:{% if request.user.id in post.is_liked %}red{% else %}black{% endif %}" class="{% if request.user.id in post.is_liked %}fas{% else %}far{% endif %} fa-heart" data-id="{{ post.id }}"></i><span>{{ post.like_set.count }}</span></p>
+        <!--<p class="d-inline-block"><i class="far fa-comment"></i>2k</p>-->
+        <a href="/accounts/comment/{{ post.id }}/"><i class="far fa-comment"></i>{{ post.comments_set.count }}</a>
+        </div>
+        <p>{{ post.created_at | naturaltime }}</p>
+      </div>
+        
+       </div> 
+       </div>
+{% endfor %}
+    </div>
+    <div class="col-3" style="position: fixed; right: 10%;">
+
+        <div class="flex-column align-items-start mb-3">
+            <div class="d-flex w-100 justify-content-start">
+                <img src="{{ request.user.profilephoto_set.all.0.profile.url }}" style="width: 70px; height: 70px; border-radius: 50%;object-fit: cover;" alt="" srcset="">
+                <p class="ml-3" style="line-height: 70px; vertical-align: middle;">{{ request.user }}</p>
+              </div>
+        </div>
+
+        <div class="list-group notifi" style="height: 270px;overflow-y: scroll;">
+          {% for noti in notifications %}
+          {% if noti.class_name == 'Friends' %}
+            <div class="list-group-item list-group-item-action flex-column align-items-start "></a>
+              <div class="d-flex w-100 justify-content-between">
+
+                <p class="mb-1"> <a href="/accounts/profile/user/{{ noti.follower.id }}/" class="" style="font-weight: bold;font-size: 1.05em;"> {{ noti.follower.email }}</a> started following you. <span style="font-size: smaller; letter-spacing: 0; margin-left: 5px;"> {{ noti.created_at | naturaltime }}</span></p>
+                <img src="{{ noti.follower.profilephoto_set.all.0.profile.url }}" alt="" style="max-width: 40px;max-height: 40px;border-radius: 50%;object-fit: cover;min-width: 40px;min-height: 40px;">
+                
+              </div>
+            </div>
+            {% elif noti.class_name == 'Comments' %}
+            <div class="list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-between">
+
+                <p class="mb-1"><a href="/accounts/profile/user/{{ noti.user.id }}/" class="" style="font-weight: bold;font-size: 1.05em;"> {{ noti.user.email }}</a> commented on your <a href="/accounts/comment/{{ noti.post.id }}/" class="" style="font-weight: bold;font-size: 1.05em;"> photo</a> <span style="font-size: smaller; letter-spacing: 0; margin-left: 5px;"> {{ noti.created_at | naturaltime }}</span></p>
+                <img src="{{ noti.user.profilephoto_set.all.0.profile.url }}" alt="" style="max-width: 40px;max-height: 40px;border-radius: 50%;object-fit: cover;min-width: 40px;min-height: 40px;">
+             
+              </div>
+            </div>
+            {% elif noti.class_name == 'Like' %}
+            <div class="list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-between">
+
+                <p class="mb-1"><a href="/accounts/profile/user/{{ noti.user.id }}/" class="" style="font-weight: bold;font-size: 1.05em;"> {{ noti.user.email }}</a> liked your <a href="/accounts/comment/{{ noti.post.id }}/" class="" style="font-weight: bold;font-size: 1.05em;"> photo</a> <span style="font-size: smaller; letter-spacing: 0; margin-left: 5px;"> {{ noti.created_at | naturaltime }}</span></p>
+                <p class="mb-1"></p>
+                <img src="{{ noti.user.profilephoto_set.all.0.profile.url }}" alt="" style="max-width: 40px;max-height: 40px;border-radius: 50%;object-fit: cover;min-width: 40px;min-height: 40px;">
+               
+              </div>
+            </div>
+            {% elif noti.class_name == 'FacesPermission' %}
+            <div class="list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-between">
+
+                <p class="mb-1">
+                  {% if not noti.blurred and not noti.allowed %}
+                  <i class="fas fa-circle" style="color: red;
+                  box-shadow: 0px 0px 6px 0px red;
+                  border-radius: 60%;"></i>
+                  {% endif %}
+                  <a href="/accounts/profile/user/{{ noti.post.user.id }}/" class="" style="font-weight: bold;font-size: 1.05em;"> 
+                  {{ noti.post.user.email }}</a> posted an image that contains your face                  
+                  <span style="font-size: smaller; letter-spacing: 0; margin-left: 5px;"> {{ noti.created_at | naturaltime }}</span><br> 
+                  <a href="/accounts/comment/{{ noti.post.id }}/" class="badge badge-light  mt-2" style="font-weight: bold;font-size: 1.05em;">View Photo</a> 
+                  {% if not noti.blurred and not noti.allowed %}
+                  <a href="/accounts/allow/{{ noti.id }}/" class="badge badge-light text-secondary mt-2" style="font-weight: bold;font-size: 1.05em;">Allow</a> 
+                  <a href="/accounts/blur/{{ noti.id }}/" class="badge badge-light text-danger mt-2" style="font-weight: bold;font-size: 1.05em;">Blur</a> 
+                  {% endif %}
+                  {% if noti.blurred %}
+                  Blurred <i class="fas fa-check-circle" style="color: red"></i>
+                  {% elif noti.allowed %}
+                  Allowed <i class="fas fa-check-circle" style="color: green"></i>
+                  {% endif %} 
+                </p>
+
+                <p class="mb-1"></p>
+                <img src="{{ noti.post.user.profilephoto_set.all.0.profile.url }}" alt="" style="max-width: 40px;max-height: 40px;border-radius: 50%;object-fit: cover;min-width: 40px;min-height: 40px;">
+               
+              </div>
+            </div>
+            {% endif %}
+          {% endfor %}
+          </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<style>
+  #id_password{
+    display: none;
+  }
+</style>
+<div class="container mt-5">
+    <h3>Edit Profile</h1>
+  	<hr>
+	<div class="row">
+      <!-- left column 
+     <div class="col-md-3">
+        <div class="text-center">
+          <img src="//placehold.it/100" class="avatar img-circle" alt="avatar">
+          <h6>Upload a different photo...</h6>
+          
+          <input type="file" class="form-control">
+        </div>
+      </div>
+    -->
+      <!-- edit form column -->
+      <div class="col-md-9 personal-info">
+        
+        <form class="form-horizontal" method="POST">
+        {% csrf_token %}
+          {{ form | crispy }}
+
+          <div class="form-group">
+            <div class="col-md-8">
+              <input type="submit" class="btn btn-primary" value="Save Changes">
+              <input type="reset" class="btn btn-default" value="Cancel">
+            </div>
+          </div>
+        </form>
+      </div>
+  </div>
+</div>
+<hr>
+
+
+
+{% endblock %}

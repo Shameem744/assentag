@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>login</title>
+        <!-- <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"> -->
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+        <style type="text/css">
+            #hint_id_password1, #hint_id_password2{
+                display:none;
+            }
+        </style>
+    </head>
+
+    
+    <body class="bg-light">
+        <div class="container">
+            {% block content %}
+                <form action="" method="POST">
+            <div class="col-4 p-4 pt-5 pb-5 bg-white" style="margin:150px auto 0 auto;box-shadow: 0px 0px 20px rgba(0,0,0,0.5);">
+
+      {% csrf_token %}
+
+                <h2 class="text-center mb-3 ">Assent Tag</h2>
+                
+                <div class="form-group">
+                  <label for="">Email</label>
+                  <input type="email"
+                    class="form-control" name="email" placeholder="johnsmith@gmail.com">
+
+                </div>
+                <div class="form-group">
+                    <label for="">Password</label>
+                    <input type="password"
+                      class="form-control" name="password" placeholder="">
+                  </div>
+                  <p class="text-danger">{{ login_error_msg }}</p>
+                  <input class="btn btn-success mt-3" type="submit" value="login" >
+                  <a href="/accounts/register/" class="btn btn-info mt-3">Register</a>
+            </form>
+        </div>
+            {% endblock %}
+
+        </div>
+        
+    </body>
+</html>

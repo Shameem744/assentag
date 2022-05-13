@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<script>
+    var inactivityTime = function () {
+    var time;
+    window.onload = resetTimer;
+    // DOM Events
+    document.onmousemove = resetTimer;
+    document.onkeypress = resetTimer;
+
+    function logout() {
+        window.location = "/accounts/chat/{{ user_data.id}}/"
+    }
+
+    function resetTimer() {
+        clearTimeout(time);
+        time = setTimeout(logout, 5000)
+        // 1000 milliseconds = 1 second
+    }
+    };
+  $(document).ready(function(){
+    $('.msg').click(function(){
+        $(this).find('.msg-time').toggleClass("time-show")
+    })  
+    $('.notifi').scrollTop($('.notifi')[0].scrollHeight);
+
+    inactivityTime();
+});
+</script>
+
+<style>
+    .time-show{
+        visibility: hidden;
+    }
+    .chat-bagde{
+        display: inline-block;
+        max-width: 60%;
+        padding: 5px 12px;
+        border-radius: 15px;
+        border: 1px solid #dbdbdb;
+    }
+    .sender {
+        background-color: #ececec;
+    }
+  .notifi::-webkit-scrollbar{
+    width: 3px;
+  }
+  .notifi::-webkit-scrollbar-track {
+	background-color: #fafafa;
+	/* You can add other properties & values */
+}
+.notifi::-webkit-scrollbar-thumb {
+  background: rgb(158, 158, 158); 
+}
+</style>
+<div class="col-7 m-auto">
+
+  <div class="list-group notifi mt-5">
+      <div class="list-group-item list-group-item-action flex-column align-items-start "></a>
+        <div class="d-flex w-100 justify-content-between">
+            <img src="{{ user_data.profilephoto_set.all.0.profile.url }}" alt="" style="width: 40px; height: 40px; border-radius: 50%;object-fit: cover;">
+            <p class="mb-1 lead">{{ user_data.email }}</p>
+
+        </div>
+      </div>
+
+  <div class="list-group-item notifi mt-2 pt-4" style="height: 500px;overflow-y: scroll;">
+    {% for chat in chats %}
+    {% if chat.sender == request.user %}
+        <p class="w-100 text-right msg"> <span class="chat-bagde sender">{{ chat.message }}
+        </span><span class="d-block mt-2 msg-time time-show" style="font-size: 0.8em;">{{ chat.created_at | naturaltime }}</span>
+        </p>
+
+    {% else %}
+        <p class="w-100 msg"><span class="chat-bagde">{{ chat.message }}</span>
+            <span class="d-block mt-2 msg-time time-show" style="font-size: 0.8em;">{{ chat.created_at | naturaltime }}</span></p>
+    {% endif %}
+    {% endfor %}
+    </div>
+
+    <form action="" method="post">
+    {% csrf_token %}
+    <div class="d-flex">
+        <input type="text" class="flex-grow-1 form-control-sm" name="message">
+        <input type="button" class="btn btn-sm btn-dark" value="Refresh" onclick="window.location ='/accounts/chat/{{user_data.id}}/'">
+        <input type="submit" class="btn btn-sm text-light" style="background-color: #157fd3;" value="send">
+    
+    </div>
+    </form>
+</div>
+{% endblock%}
+
+<!---->

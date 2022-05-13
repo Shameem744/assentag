@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<script>
+  $(document).ready(function(){
+
+});
+</script>
+<div class="col-5 m-auto">
+<div class="card  mb-3 round-div  mt-4" style="box-shadow: 0px 5px 20px 1px #4bbf734d; padding: 10px;">
+    <h3 class="text-light bg-dark p-2">Followers</h3>
+    {% for i in followers %}
+    <a href="/accounts/profile/user/{{ i.follower.id }}/" class="dropdown-item" style="padding-left: 10px;">
+    <img src="{{ i.follower.profilephoto_set.all.0.profile.url }}" style="height:40px;width:40px;object-fit:cover;border-radius:50%;margin-right: 10px;">{{ i.follower.email }}</a>
+    {% endfor %}
+</div>
+</div>
+
+{% endblock%}
+
+<!---->
